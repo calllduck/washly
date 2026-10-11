@@ -852,5 +852,41 @@
     "placeholders": {
       "amount": { "type": "String" }
     }
+  },
+
+  "accountAddresses": "Daftar Alamat",
+  "accountAddressesSubtitle": "Kelola alamat penjemputan & pengantaran Anda",
+  "addressListTitle": "Alamat Tersimpan",
+  "addressAddTitle": "Tambah Alamat Baru",
+  "addressEditTitle": "Ubah Alamat",
+  "addressEmpty": "Belum ada alamat tersimpan.",
+  "addressLabel": "Label",
+  "addressLabelHint": "mis. Rumah, Kantor, Kost",
+  "addressReceiver": "Nama Penerima",
+  "addressPhone": "Nomor Telepon",
+  "addressFull": "Alamat Lengkap",
+  "addressFullHint": "Nama jalan, nomor rumah, detail...",
+  "addressNotes": "Patokan / Catatan Driver (opsional)",
+  "addressNotesHint": "mis. Pagar putih, samping minimarket",
+  "addressSetDefault": "Jadikan alamat utama",
+  "addressDefaultBadge": "Utama",
+  "addressSaveSuccess": "Alamat berhasil disimpan",
+  "addressDeleteConfirm": "Apakah Anda yakin ingin menghapus alamat ini?",
+  "checkoutSelectAddress": "Pilih Alamat",
+  "checkoutChangeAddress": "Ganti",
+  "checkoutAddAddress": "Tambah Alamat",
+  "checkoutNoAddressWarning": "Silakan pilih atau tambahkan alamat penjemputan terlebih dahulu.",
+
+  "chatTitle": "Chat Pesanan",
+  "chatTypeMessage": "Ketik pesan...",
+  "chatNoMessages": "Belum ada pesan. Mulai obrolan!",
+  "chatContactPartner": "Chat Laundry",
+  "chatContactCustomer": "Chat Pelanggan",
+  "chatSending": "Mengirim...",
+  "chatOrderContext": "Pesanan #{id}",
+  "@chatOrderContext": {
+    "placeholders": {
+      "id": { "type": "int" }
+    }
   }
 }

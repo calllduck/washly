@@ -3067,6 +3067,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rp {amount}'**
   String driverHistoryMoneyRp(String amount);
+
+  /// No description provided for @accountAddresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Addresses'**
+  String get accountAddresses;
+
+  /// No description provided for @accountAddressesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your pickup & delivery addresses'**
+  String get accountAddressesSubtitle;
+
+  /// No description provided for @addressListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Addresses'**
+  String get addressListTitle;
+
+  /// No description provided for @addressAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Address'**
+  String get addressAddTitle;
+
+  /// No description provided for @addressEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Address'**
+  String get addressEditTitle;
+
+  /// No description provided for @addressEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved addresses yet.'**
+  String get addressEmpty;
+
+  /// No description provided for @addressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get addressLabel;
+
+  /// No description provided for @addressLabelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Home, Office, Kost'**
+  String get addressLabelHint;
+
+  /// No description provided for @addressReceiver.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient Name'**
+  String get addressReceiver;
+
+  /// No description provided for @addressPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get addressPhone;
+
+  /// No description provided for @addressFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Address'**
+  String get addressFull;
+
+  /// No description provided for @addressFullHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Street name, house number, details...'**
+  String get addressFullHint;
+
+  /// No description provided for @addressNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes for Driver (optional)'**
+  String get addressNotes;
+
+  /// No description provided for @addressNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. White gate, next to grocery store'**
+  String get addressNotesHint;
+
+  /// No description provided for @addressSetDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as primary address'**
+  String get addressSetDefault;
+
+  /// No description provided for @addressDefaultBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary'**
+  String get addressDefaultBadge;
+
+  /// No description provided for @addressSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Address saved successfully'**
+  String get addressSaveSuccess;
+
+  /// No description provided for @addressDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this address?'**
+  String get addressDeleteConfirm;
+
+  /// No description provided for @checkoutSelectAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Address'**
+  String get checkoutSelectAddress;
+
+  /// No description provided for @checkoutChangeAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get checkoutChangeAddress;
+
+  /// No description provided for @checkoutAddAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Address'**
+  String get checkoutAddAddress;
+
+  /// No description provided for @checkoutNoAddressWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select or add a pickup address first.'**
+  String get checkoutNoAddressWarning;
+
+  /// No description provided for @chatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Chat'**
+  String get chatTitle;
+
+  /// No description provided for @chatTypeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get chatTypeMessage;
+
+  /// No description provided for @chatNoMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. Send a message to get started!'**
+  String get chatNoMessages;
+
+  /// No description provided for @chatContactPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Laundry'**
+  String get chatContactPartner;
+
+  /// No description provided for @chatContactCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Customer'**
+  String get chatContactCustomer;
+
+  /// No description provided for @chatSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get chatSending;
+
+  /// No description provided for @chatOrderContext.
+  ///
+  /// In en, this message translates to:
+  /// **'Order #{id}'**
+  String chatOrderContext(int id);
 }
 
 class _AppLocalizationsDelegate

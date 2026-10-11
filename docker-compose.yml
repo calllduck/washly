@@ -45,7 +45,8 @@ services:
       - /app/node_modules
     # Apply migrations and seed once the DB is healthy, then start dev server.
     command: >
-      sh -c "npx prisma migrate deploy &&
+      sh -c "npx prisma generate &&
+             npx prisma migrate deploy &&
              npm run seed &&
              npm run dev"
 

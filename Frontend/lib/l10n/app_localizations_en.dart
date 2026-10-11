@@ -1692,4 +1692,97 @@ class AppLocalizationsEn extends AppLocalizations {
   String driverHistoryMoneyRp(String amount) {
     return 'Rp $amount';
   }
+
+  @override
+  String get accountAddresses => 'Saved Addresses';
+
+  @override
+  String get accountAddressesSubtitle =>
+      'Manage your pickup & delivery addresses';
+
+  @override
+  String get addressListTitle => 'Saved Addresses';
+
+  @override
+  String get addressAddTitle => 'Add New Address';
+
+  @override
+  String get addressEditTitle => 'Edit Address';
+
+  @override
+  String get addressEmpty => 'No saved addresses yet.';
+
+  @override
+  String get addressLabel => 'Label';
+
+  @override
+  String get addressLabelHint => 'e.g. Home, Office, Kost';
+
+  @override
+  String get addressReceiver => 'Recipient Name';
+
+  @override
+  String get addressPhone => 'Phone Number';
+
+  @override
+  String get addressFull => 'Full Address';
+
+  @override
+  String get addressFullHint => 'Street name, house number, details...';
+
+  @override
+  String get addressNotes => 'Notes for Driver (optional)';
+
+  @override
+  String get addressNotesHint => 'e.g. White gate, next to grocery store';
+
+  @override
+  String get addressSetDefault => 'Set as primary address';
+
+  @override
+  String get addressDefaultBadge => 'Primary';
+
+  @override
+  String get addressSaveSuccess => 'Address saved successfully';
+
+  @override
+  String get addressDeleteConfirm =>
+      'Are you sure you want to delete this address?';
+
+  @override
+  String get checkoutSelectAddress => 'Select Address';
+
+  @override
+  String get checkoutChangeAddress => 'Change';
+
+  @override
+  String get checkoutAddAddress => 'Add Address';
+
+  @override
+  String get checkoutNoAddressWarning =>
+      'Please select or add a pickup address first.';
+
+  @override
+  String get chatTitle => 'Order Chat';
+
+  @override
+  String get chatTypeMessage => 'Type a message...';
+
+  @override
+  String get chatNoMessages =>
+      'No messages yet. Send a message to get started!';
+
+  @override
+  String get chatContactPartner => 'Chat Laundry';
+
+  @override
+  String get chatContactCustomer => 'Chat Customer';
+
+  @override
+  String get chatSending => 'Sending...';
+
+  @override
+  String chatOrderContext(int id) {
+    return 'Order #$id';
+  }
 }

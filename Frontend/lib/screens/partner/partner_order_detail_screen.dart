@@ -8,6 +8,7 @@ import '../../services/partner_service.dart';
 import '../../services/warranty_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/status_timeline.dart';
+import '../chat/order_chat_screen.dart';
 
 /// Full partner-side order detail: items, declared-item intake, status actions
 /// (accept/reject, weigh, mark ready), the customer review when completed, and
@@ -78,12 +79,34 @@ class _PartnerOrderDetailScreenState extends State<PartnerOrderDetailScreen> {
     }
   }
 
+  void _openChat(Order order) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OrderChatScreen(
+          orderId: order.id,
+          interlocutorName: 'Customer',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final order = _order;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.orderN(widget.orderId))),
+      appBar: AppBar(
+        title: Text(l10n.orderN(widget.orderId)),
+        actions: [
+          if (order != null)
+            IconButton(
+              icon: const Icon(Icons.chat_outlined),
+              tooltip: l10n.chatContactCustomer,
+              onPressed: () => _openChat(order),
+            ),
+        ],
+      ),
       body: _loading && order == null
           ? const Center(child: CircularProgressIndicator())
           : order == null

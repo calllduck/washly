@@ -12,6 +12,10 @@ import '../models/order.dart';
 import '../models/wallet.dart';
 import '../services/order_service.dart';
 import '../theme/app_theme.dart';
+import '../models/user_address.dart';
+import '../services/address_service.dart';
+import 'account/address_list_screen.dart';
+import 'account/address_form_screen.dart';
 import 'customer/voucher_select_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -33,14 +37,71 @@ class _DeclaredDraft {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final _service = OrderService();
+  final _addressService = AddressService();
   final _paymentLauncher = PaymentLauncher();
   final _picker = ImagePicker();
-  final _addressCtrl =
-      TextEditingController(text: 'Jl. Rawa Belong No. 15, Palmerah');
   final _notesCtrl = TextEditingController();
   final List<_DeclaredDraft> _declared = [];
+  UserAddress? _selectedAddress;
+  bool _loadingAddress = true;
   Voucher? _voucher; // applied voucher, if any
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialAddress();
+  }
+
+  @override
+  void dispose() {
+    _notesCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadInitialAddress() async {
+    try {
+      final list = await _addressService.getAddresses();
+      if (!mounted) return;
+      if (list.isNotEmpty) {
+        final def =
+            list.firstWhere((a) => a.isDefault, orElse: () => list.first);
+        setState(() {
+          _selectedAddress = def;
+          _loadingAddress = false;
+        });
+      } else {
+        setState(() => _loadingAddress = false);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingAddress = false);
+    }
+  }
+
+  Future<void> _pickAddress() async {
+    final chosen = await Navigator.push<UserAddress>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddressListScreen(
+          isSelecting: true,
+          selectedId: _selectedAddress?.id,
+        ),
+      ),
+    );
+    if (chosen != null && mounted) {
+      setState(() => _selectedAddress = chosen);
+    }
+  }
+
+  Future<void> _addNewAddress() async {
+    final created = await Navigator.push<UserAddress>(
+      context,
+      MaterialPageRoute(builder: (_) => const AddressFormScreen()),
+    );
+    if (created != null && mounted) {
+      setState(() => _selectedAddress = created);
+    }
+  }
 
   // Flat protection fee charged once when the order carries declared items.
   static const double _declaredItemsFee = 2000;
@@ -124,9 +185,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> _placeOrder() async {
     final l10n = AppLocalizations.of(context);
-    if (_addressCtrl.text.trim().isEmpty) {
+    if (_selectedAddress == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.checkoutEnterPickupAddress)),
+        SnackBar(
+          content: Text(l10n.checkoutNoAddressWarning),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -144,7 +208,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       final order = await _service.createOrder(
         laundromatId: widget.store.id,
-        pickupAddress: _addressCtrl.text.trim(),
+        pickupAddress: _selectedAddress!.fullAddress,
+        deliveryAddress: _selectedAddress!.fullAddress,
+        customerLat: _selectedAddress!.latitude,
+        customerLng: _selectedAddress!.longitude,
         notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
         cart: widget.cart,
         declaredItems: _declared
@@ -292,13 +359,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Text(l10n.checkoutDeliveryPickupDetails,
                 style: AppTypography.subheading),
             const SizedBox(height: AppSpacing.md),
-            TextField(
-              controller: _addressCtrl,
-              decoration: InputDecoration(
-                labelText: l10n.checkoutPickupAddressLabel,
-                prefixIcon: const Icon(Icons.location_on, color: AppColors.error),
-              ),
-            ),
+            _addressCard(l10n),
             const SizedBox(height: AppSpacing.md),
             TextField(
               controller: _notesCtrl,
@@ -365,6 +426,148 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ),
         child: Padding(padding: const EdgeInsets.all(AppSpacing.md), child: child),
       );
+
+  Widget _addressCard(AppLocalizations l10n) {
+    if (_loadingAddress) {
+      return _card(
+        child: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(AppSpacing.md),
+            child: SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_selectedAddress == null) {
+      return _card(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.location_off_outlined,
+                    color: AppColors.error, size: 24),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    l10n.checkoutNoAddressWarning,
+                    style: AppTypography.body
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _addNewAddress,
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(l10n.checkoutAddAddress),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final addr = _selectedAddress!;
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                addr.label.toLowerCase() == 'kantor'
+                    ? Icons.business_outlined
+                    : addr.label.toLowerCase() == 'kost'
+                        ? Icons.apartment_outlined
+                        : Icons.home_outlined,
+                color: AppColors.primary,
+                size: 20,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                addr.label,
+                style: AppTypography.subheading
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              if (addr.isDefault) ...[
+                const SizedBox(width: AppSpacing.xs),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                  child: Text(
+                    l10n.addressDefaultBadge,
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.primary,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+              const Spacer(),
+              TextButton.icon(
+                onPressed: _pickAddress,
+                icon: const Icon(Icons.swap_horiz, size: 18),
+                label: Text(l10n.checkoutChangeAddress),
+                style: TextButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          if (addr.receiverName != null && addr.receiverName!.isNotEmpty)
+            Text(
+              '${addr.receiverName}${addr.phone != null && addr.phone!.isNotEmpty ? ' (${addr.phone})' : ''}',
+              style: AppTypography.body.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          const SizedBox(height: 2),
+          Text(
+            addr.fullAddress,
+            style:
+                AppTypography.body.copyWith(color: AppColors.textSecondary),
+          ),
+          if (addr.notes != null && addr.notes!.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.info_outline,
+                    size: 14, color: AppColors.textSecondary),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    addr.notes!,
+                    style: AppTypography.caption.copyWith(
+                      fontStyle: FontStyle.italic,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 
   Widget _orderSummaryCard(AppLocalizations l10n) {
     return _card(

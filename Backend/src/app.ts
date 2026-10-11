@@ -9,6 +9,8 @@ import partnerRoutes from './routes/partner.js';
 import driverRoutes from './routes/driver.js';
 import paymentRoutes from './routes/payment.js';
 import loyaltyRoutes from './routes/loyalty.js';
+import addressRoutes from './routes/address.js';
+import chatRoutes from './routes/chat.js';
 dotenv.config();
 
 const app = express();
@@ -21,6 +23,8 @@ app.use(express.json({ limit: '15mb' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
+app.use('/api/addresses', addressRoutes);
+app.use('/api/chat', chatRoutes);
 app.use('/api/laundromats', laundromatRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/partner', partnerRoutes);

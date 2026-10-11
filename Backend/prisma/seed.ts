@@ -37,6 +37,7 @@ async function main() {
   await prisma.pointsTransaction.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.deliveryOffer.deleteMany();
+  await prisma.orderChatMessage.deleteMany();
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.voucher.deleteMany();
@@ -45,6 +46,7 @@ async function main() {
   await prisma.laundromatsOnTags.deleteMany();
   await prisma.laundromat.deleteMany();
   await prisma.tag.deleteMany();
+  await prisma.address.deleteMany();
   await prisma.driverProfile.deleteMany();
   await prisma.user.deleteMany();
 
@@ -63,6 +65,45 @@ async function main() {
     },
   });
   console.log(`Created demo customer: ${demoCustomer.email} (ID: ${demoCustomer.id})`);
+
+  await prisma.address.createMany({
+    data: [
+      {
+        userId: demoCustomer.id,
+        label: 'Rumah',
+        receiverName: 'Demo Customer',
+        phone: '081234567890',
+        fullAddress: 'Jl. Wijaya IX No. 3, Melawai, Kebayoran Baru, Jakarta Selatan',
+        notes: 'Pagar putih, samping minimarket',
+        latitude: -6.2447,
+        longitude: 106.7995,
+        isDefault: true,
+      },
+      {
+        userId: demoCustomer.id,
+        label: 'Kantor',
+        receiverName: 'Demo Customer',
+        phone: '081234567890',
+        fullAddress: 'Gedung Cyber 2 Lt. 12, Jl. H. R. Rasuna Said, Kuningan, Jakarta Selatan',
+        notes: 'Titip di lobby reception',
+        latitude: -6.2241,
+        longitude: 106.8310,
+        isDefault: false,
+      },
+      {
+        userId: demoCustomer.id,
+        label: 'Kost',
+        receiverName: 'Demo Customer',
+        phone: '081234567890',
+        fullAddress: 'Kost Green Residence, Jl. Rawa Belong No. 15, Palmerah, Jakarta Barat',
+        notes: 'Kamar No. 204 lantai 2',
+        latitude: -6.2015,
+        longitude: 106.7820,
+        isDefault: false,
+      },
+    ],
+  });
+  console.log('Seeded saved addresses for demo customer.');
 
   // 3. Marketplace discovery tags.
   const tagNames = [

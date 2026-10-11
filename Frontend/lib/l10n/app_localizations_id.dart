@@ -1710,4 +1710,96 @@ class AppLocalizationsId extends AppLocalizations {
   String driverHistoryMoneyRp(String amount) {
     return 'Rp $amount';
   }
+
+  @override
+  String get accountAddresses => 'Daftar Alamat';
+
+  @override
+  String get accountAddressesSubtitle =>
+      'Kelola alamat penjemputan & pengantaran Anda';
+
+  @override
+  String get addressListTitle => 'Alamat Tersimpan';
+
+  @override
+  String get addressAddTitle => 'Tambah Alamat Baru';
+
+  @override
+  String get addressEditTitle => 'Ubah Alamat';
+
+  @override
+  String get addressEmpty => 'Belum ada alamat tersimpan.';
+
+  @override
+  String get addressLabel => 'Label';
+
+  @override
+  String get addressLabelHint => 'mis. Rumah, Kantor, Kost';
+
+  @override
+  String get addressReceiver => 'Nama Penerima';
+
+  @override
+  String get addressPhone => 'Nomor Telepon';
+
+  @override
+  String get addressFull => 'Alamat Lengkap';
+
+  @override
+  String get addressFullHint => 'Nama jalan, nomor rumah, detail...';
+
+  @override
+  String get addressNotes => 'Patokan / Catatan Driver (opsional)';
+
+  @override
+  String get addressNotesHint => 'mis. Pagar putih, samping minimarket';
+
+  @override
+  String get addressSetDefault => 'Jadikan alamat utama';
+
+  @override
+  String get addressDefaultBadge => 'Utama';
+
+  @override
+  String get addressSaveSuccess => 'Alamat berhasil disimpan';
+
+  @override
+  String get addressDeleteConfirm =>
+      'Apakah Anda yakin ingin menghapus alamat ini?';
+
+  @override
+  String get checkoutSelectAddress => 'Pilih Alamat';
+
+  @override
+  String get checkoutChangeAddress => 'Ganti';
+
+  @override
+  String get checkoutAddAddress => 'Tambah Alamat';
+
+  @override
+  String get checkoutNoAddressWarning =>
+      'Silakan pilih atau tambahkan alamat penjemputan terlebih dahulu.';
+
+  @override
+  String get chatTitle => 'Chat Pesanan';
+
+  @override
+  String get chatTypeMessage => 'Ketik pesan...';
+
+  @override
+  String get chatNoMessages => 'Belum ada pesan. Mulai obrolan!';
+
+  @override
+  String get chatContactPartner => 'Chat Laundry';
+
+  @override
+  String get chatContactCustomer => 'Chat Pelanggan';
+
+  @override
+  String get chatSending => 'Mengirim...';
+
+  @override
+  String chatOrderContext(int id) {
+    return 'Pesanan #$id';
+  }
 }

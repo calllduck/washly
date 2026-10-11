@@ -5,9 +5,11 @@ import '../../core/locale_store.dart';
 import '../../core/profile_photo_store.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_theme.dart';
+import '../../models/user.dart';
 import '../../widgets/profile_avatar.dart';
 import '../auth/role_select_screen.dart';
 import '../partner/partner_shop_edit_screen.dart';
+import 'address_list_screen.dart';
 import 'change_language_screen.dart';
 import 'change_password_screen.dart';
 import 'edit_profile_screen.dart';
@@ -107,6 +109,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               onTap: () => _open(const EditProfileScreen()),
             ),
             const SizedBox(height: AppSpacing.md),
+
+            if (user?.role == UserRole.customer) ...[
+              _MenuTile(
+                icon: Icons.location_on_outlined,
+                title: l10n.accountAddresses,
+                onTap: () => _open(const AddressListScreen()),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
 
             _MenuTile(
               icon: Icons.lock_outline,

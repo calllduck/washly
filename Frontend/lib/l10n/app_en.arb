@@ -852,5 +852,41 @@
     "placeholders": {
       "amount": { "type": "String" }
     }
+  },
+
+  "accountAddresses": "Saved Addresses",
+  "accountAddressesSubtitle": "Manage your pickup & delivery addresses",
+  "addressListTitle": "Saved Addresses",
+  "addressAddTitle": "Add New Address",
+  "addressEditTitle": "Edit Address",
+  "addressEmpty": "No saved addresses yet.",
+  "addressLabel": "Label",
+  "addressLabelHint": "e.g. Home, Office, Kost",
+  "addressReceiver": "Recipient Name",
+  "addressPhone": "Phone Number",
+  "addressFull": "Full Address",
+  "addressFullHint": "Street name, house number, details...",
+  "addressNotes": "Notes for Driver (optional)",
+  "addressNotesHint": "e.g. White gate, next to grocery store",
+  "addressSetDefault": "Set as primary address",
+  "addressDefaultBadge": "Primary",
+  "addressSaveSuccess": "Address saved successfully",
+  "addressDeleteConfirm": "Are you sure you want to delete this address?",
+  "checkoutSelectAddress": "Select Address",
+  "checkoutChangeAddress": "Change",
+  "checkoutAddAddress": "Add Address",
+  "checkoutNoAddressWarning": "Please select or add a pickup address first.",
+
+  "chatTitle": "Order Chat",
+  "chatTypeMessage": "Type a message...",
+  "chatNoMessages": "No messages yet. Send a message to get started!",
+  "chatContactPartner": "Chat Laundry",
+  "chatContactCustomer": "Chat Customer",
+  "chatSending": "Sending...",
+  "chatOrderContext": "Order #{id}",
+  "@chatOrderContext": {
+    "placeholders": {
+      "id": { "type": "int" }
+    }
   }
 }

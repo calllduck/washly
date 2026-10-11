@@ -13,6 +13,7 @@ import '../../services/order_service.dart';
 import '../../services/warranty_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/status_timeline.dart';
+import '../chat/order_chat_screen.dart';
 
 /// Full order view: lifecycle timeline, per-kg weigh-in approval action, and
 /// the receipt (line items, fee, voucher, payment status, totals).
@@ -286,6 +287,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
+  void _openChat(Order order) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OrderChatScreen(
+          orderId: order.id,
+          interlocutorName: order.laundromat?.name,
+        ),
+      ),
+    );
+  }
+
   Widget _header(AppLocalizations l10n, Order order) {
     return Row(
       children: [
@@ -301,6 +314,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ],
           ),
         ),
+        IconButton(
+          icon: const Icon(Icons.chat_outlined, color: AppColors.primary),
+          tooltip: l10n.chatContactPartner,
+          onPressed: () => _openChat(order),
+        ),
+        const SizedBox(width: AppSpacing.xs),
         StatusChip(status: order.status),
       ],
     );

@@ -89,6 +89,26 @@ model User {
   reviews      Review[]
   pointsTransactions PointsTransaction[]
   vouchers     Voucher[]
+  addresses    Address[]
+  chatMessages OrderChatMessage[]
+}
+
+model Address {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label        String   // e.g. "Rumah", "Kantor", "Kost"
+  receiverName String?
+  phone        String?
+  fullAddress  String
+  notes        String?
+  latitude     Float?
+  longitude    Float?
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model DriverProfile {
@@ -213,6 +233,7 @@ model Order {
   payments          Payment[]
   declaredItems     DeclaredItem[]
   warrantyClaims    WarrantyClaim[]
+  chatMessages      OrderChatMessage[]
   appliedVoucherId  Int?         @unique
   appliedVoucher    Voucher?     @relation(fields: [appliedVoucherId], references: [id])
 }
@@ -306,4 +327,18 @@ model WarrantyClaim {
   payoutFundedBy String?             @default("WASHLY")
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
+}
+
+model OrderChatMessage {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  senderId   Int
+  sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  senderRole Role
+  text       String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([orderId, createdAt])
 }
