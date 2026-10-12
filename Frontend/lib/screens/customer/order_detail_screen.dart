@@ -111,7 +111,27 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.orderDetailTitle)),
+      appBar: AppBar(
+        title: Text(l10n.orderN(widget.orderId)),
+        actions: [
+          FutureBuilder<Order>(
+            future: _future,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done ||
+                  !snapshot.hasData ||
+                  snapshot.hasError) {
+                return const SizedBox.shrink();
+              }
+              final order = snapshot.data!;
+              return IconButton(
+                icon: const Icon(Icons.chat_outlined),
+                tooltip: l10n.chatContactPartner,
+                onPressed: () => _openChat(order),
+              );
+            },
+          ),
+        ],
+      ),
       body: FutureBuilder<Order>(
         future: _future,
         builder: (context, snapshot) {
@@ -314,12 +334,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ],
           ),
         ),
-        IconButton(
-          icon: const Icon(Icons.chat_outlined, color: AppColors.primary),
-          tooltip: l10n.chatContactPartner,
-          onPressed: () => _openChat(order),
-        ),
-        const SizedBox(width: AppSpacing.xs),
         StatusChip(status: order.status),
       ],
     );
