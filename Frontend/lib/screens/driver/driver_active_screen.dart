@@ -7,6 +7,7 @@ import '../../services/driver_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/driver_status_bar.dart';
 import '../../widgets/tracking_map.dart';
+import '../chat/order_chat_screen.dart';
 
 /// Driver Active tab (Gojek-style): a full-screen map with the laundromat +
 /// driver pins and route line, and a draggable bottom sheet (peek -> full
@@ -171,7 +172,12 @@ class _DriverActiveScreenState extends State<DriverActiveScreen> {
             ),
           ),
           // Static delivery panel pinned to the bottom.
-          _deliveryPanel(l10n, order),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.55,
+            ),
+            child: SingleChildScrollView(child: _deliveryPanel(l10n, order)),
+          ),
         ],
       ),
     );
@@ -193,21 +199,30 @@ class _DriverActiveScreenState extends State<DriverActiveScreen> {
       ),
       child: SafeArea(
         top: false,
+        bottom: false,
         child: Padding(
-          // Extra bottom padding clears the floating bottom nav (72 tall + its
-          // 12 bottom margin) so the action button is never hidden behind it.
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.lg,
             AppSpacing.lg,
             AppSpacing.lg,
-            AppSpacing.md + 84,
+            AppSpacing.xxl,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.driverActiveCurrentDelivery(order.id),
-                  style: AppTypography.heading2),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(l10n.driverActiveCurrentDelivery(order.id),
+                        style: AppTypography.heading2),
+                  ),
+                ],
+              ),
+              if (order.status.hasActiveDriverAssignment) ...[
+                const SizedBox(height: AppSpacing.sm),
+                _contactCard(l10n, order),
+              ],
               const SizedBox(height: AppSpacing.lg),
               DriverStatusBar(status: order.status),
               const SizedBox(height: AppSpacing.lg),
@@ -218,6 +233,43 @@ class _DriverActiveScreenState extends State<DriverActiveScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _contactCard(AppLocalizations l10n, Order order) {
+    final isCustomer = order.status == OrderStatus.driverAssigned ||
+        order.status == OrderStatus.outForDelivery;
+    final name = isCustomer
+        ? (order.customerName?.isNotEmpty == true ? order.customerName! : l10n.chatContactCustomer)
+        : (order.laundromat?.name ?? l10n.driverActiveLaundromatFallback);
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceMuted,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(children: [
+        CircleAvatar(
+          backgroundColor: AppColors.primaryLight,
+          child: Icon(isCustomer ? Icons.person_outline : Icons.storefront_outlined,
+              color: AppColors.primaryDark),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(child: Text(name, style: AppTypography.subheading,
+            maxLines: 1, overflow: TextOverflow.ellipsis)),
+        IconButton(
+          tooltip: isCustomer ? l10n.chatContactCustomer : l10n.chatContactPartner,
+          icon: const Icon(Icons.chat_outlined, color: AppColors.primaryDark),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(
+            builder: (_) => OrderChatScreen(
+              orderId: order.id,
+              channel: isCustomer ? 'customer_driver' : 'partner_driver',
+              interlocutorName: name,
+            ),
+          )),
+        ),
+      ]),
     );
   }
 

@@ -5,6 +5,19 @@ import { authGuard } from '../middleware/authGuard.js';
 const router = Router();
 router.use(authGuard);
 
+function chatAccess(order: { customerId: number; driverId: number | null; status: string; driver: { userId: number } | null; laundromat: { ownerId: number } }, userId: number, channel: unknown) {
+  const selected = channel ?? 'customer_partner';
+  if (selected !== 'customer_partner' && selected !== 'customer_driver' && selected !== 'partner_driver') return null;
+  const customer = order.customerId === userId;
+  const partner = order.laundromat.ownerId === userId;
+  const driver = order.driver?.userId === userId;
+  const activeDriver = !!order.driverId && ['DRIVER_ASSIGNED', 'PICKED_UP', 'AT_LAUNDROMAT', 'WEIGHED_AWAITING_CONFIRM', 'AWAITING_PAYMENT', 'WASHING', 'OUT_FOR_DELIVERY'].includes(order.status);
+  if (selected === 'customer_partner' ? !(customer || partner) :
+      selected === 'customer_driver' ? !(activeDriver && (customer || driver)) :
+      !(activeDriver && (partner || driver))) return null;
+  return { channel: selected, driverProfileId: selected === 'customer_partner' ? null : order.driverId, role: customer ? 'CUSTOMER' as const : partner ? 'PARTNER' as const : 'DRIVER' as const };
+}
+
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === 'string' && v.trim().length > 0;
 }
@@ -25,6 +38,7 @@ router.get('/orders/:orderId/messages', async (req: Request, res: Response) => {
       include: {
         laundromat: { select: { id: true, ownerId: true, name: true, imageUrl: true } },
         customer: { select: { id: true, name: true } },
+        driver: { select: { userId: true } },
       },
     });
 
@@ -32,10 +46,9 @@ router.get('/orders/:orderId/messages', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Order not found.' });
     }
 
-    const isCustomer = order.customerId === userId;
-    const isPartner = order.laundromat.ownerId === userId;
+    const access = chatAccess(order, userId, req.query.channel);
 
-    if (!isCustomer && !isPartner) {
+    if (!access) {
       return res.status(403).json({ error: 'You are not authorized to view this chat.' });
     }
 
@@ -43,7 +56,7 @@ router.get('/orders/:orderId/messages', async (req: Request, res: Response) => {
 
     const messages = await prisma.orderChatMessage.findMany({
       where: {
-        orderId,
+        orderId, channel: access.channel, driverProfileId: access.driverProfileId,
         ...(sinceId && !isNaN(sinceId) ? { id: { gt: sinceId } } : {}),
       },
       include: {
@@ -53,11 +66,11 @@ router.get('/orders/:orderId/messages', async (req: Request, res: Response) => {
     });
 
     // Mark messages from the other side as read
-    const otherRole = isCustomer ? 'PARTNER' : 'CUSTOMER';
     await prisma.orderChatMessage.updateMany({
       where: {
         orderId,
-        senderRole: otherRole,
+        channel: access.channel, driverProfileId: access.driverProfileId,
+        senderId: { not: userId },
         isRead: false,
       },
       data: { isRead: true },
@@ -109,6 +122,7 @@ router.post('/orders/:orderId/messages', async (req: Request, res: Response) => 
       where: { id: orderId },
       include: {
         laundromat: { select: { ownerId: true } },
+        driver: { select: { userId: true } },
       },
     });
 
@@ -116,20 +130,20 @@ router.post('/orders/:orderId/messages', async (req: Request, res: Response) => 
       return res.status(404).json({ error: 'Order not found.' });
     }
 
-    const isCustomer = order.customerId === userId;
-    const isPartner = order.laundromat.ownerId === userId;
+    const access = chatAccess(order, userId, req.query.channel);
 
-    if (!isCustomer && !isPartner) {
+    if (!access) {
       return res.status(403).json({ error: 'You are not authorized to send messages in this order.' });
     }
 
-    const senderRole = isCustomer ? 'CUSTOMER' : 'PARTNER';
+    const senderRole = access.role;
 
     const message = await prisma.orderChatMessage.create({
       data: {
         orderId,
         senderId: userId,
         senderRole,
+        channel: access.channel, driverProfileId: access.driverProfileId,
         text: text.trim(),
         isRead: false,
       },
@@ -168,25 +182,24 @@ router.get('/orders/:orderId/unread', async (req: Request, res: Response) => {
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { laundromat: { select: { ownerId: true } } },
+      include: { laundromat: { select: { ownerId: true } }, driver: { select: { userId: true } } },
     });
 
     if (!order) {
       return res.status(404).json({ error: 'Order not found.' });
     }
 
-    const isCustomer = order.customerId === userId;
-    const isPartner = order.laundromat.ownerId === userId;
+    const access = chatAccess(order, userId, req.query.channel);
 
-    if (!isCustomer && !isPartner) {
+    if (!access) {
       return res.status(403).json({ error: 'Unauthorized.' });
     }
 
-    const otherRole = isCustomer ? 'PARTNER' : 'CUSTOMER';
     const unreadCount = await prisma.orderChatMessage.count({
       where: {
         orderId,
-        senderRole: otherRole,
+        channel: access.channel, driverProfileId: access.driverProfileId,
+        senderId: { not: userId },
         isRead: false,
       },
     });

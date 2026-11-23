@@ -33,6 +33,7 @@ async function getOwnProfile(userId: number) {
 
 const ORDER_INCLUDE = {
   items: true,
+  customer: { select: { name: true } },
   // Driver-facing: coords are OK here (drivers need the map). The customer
   // route deliberately omits laundromat coords.
   laundromat: {

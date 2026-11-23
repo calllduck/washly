@@ -7,12 +7,14 @@ import '../../theme/app_theme.dart';
 
 class OrderChatScreen extends StatefulWidget {
   final int orderId;
+  final String channel;
   final String? interlocutorName;
   final String? interlocutorSubtitle;
 
   const OrderChatScreen({
     super.key,
     required this.orderId,
+    this.channel = 'customer_partner',
     this.interlocutorName,
     this.interlocutorSubtitle,
   });
@@ -62,7 +64,7 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
 
   Future<void> _loadMessages() async {
     try {
-      final thread = await _chatService.getMessages(widget.orderId);
+      final thread = await _chatService.getMessages(widget.orderId, channel: widget.channel);
       if (!mounted) return;
       setState(() {
         _thread = thread;
@@ -87,7 +89,7 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
       final lastId = _messages.isNotEmpty ? _messages.last.id : null;
       try {
         final thread =
-            await _chatService.getMessages(widget.orderId, sinceId: lastId);
+            await _chatService.getMessages(widget.orderId, sinceId: lastId, channel: widget.channel);
         if (!mounted) return;
         if (thread.messages.isNotEmpty) {
           setState(() {
@@ -109,7 +111,7 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
     setState(() => _sending = true);
 
     try {
-      final newMsg = await _chatService.sendMessage(widget.orderId, text);
+      final newMsg = await _chatService.sendMessage(widget.orderId, text, channel: widget.channel);
       if (!mounted) return;
       setState(() {
         _messages.add(newMsg);

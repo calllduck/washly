@@ -336,6 +336,8 @@ model OrderChatMessage {
   senderId   Int
   sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
   senderRole Role
+  channel    String   @default("customer_partner")
+  driverProfileId Int?
   text       String
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())

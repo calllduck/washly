@@ -113,24 +113,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.orderN(widget.orderId)),
-        actions: [
-          FutureBuilder<Order>(
-            future: _future,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done ||
-                  !snapshot.hasData ||
-                  snapshot.hasError) {
-                return const SizedBox.shrink();
-              }
-              final order = snapshot.data!;
-              return IconButton(
-                icon: const Icon(Icons.chat_outlined),
-                tooltip: l10n.chatContactPartner,
-                onPressed: () => _openChat(order),
-              );
-            },
-          ),
-        ],
+
       ),
       body: FutureBuilder<Order>(
         future: _future,
@@ -159,6 +142,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   const SizedBox(height: AppSpacing.xl),
                 ] else if (awaitingDriver != null) ...[
                   _lookingForDriverCard(awaitingDriver),
+                  const SizedBox(height: AppSpacing.xl),
+                ] else if (order.driver != null && order.status.hasActiveDriverAssignment) ...[
+                  _driverVehicleCard(
+                    l10n,
+                    order,
+                    Localizations.localeOf(context).languageCode == 'id'
+                        ? 'Driver yang ditugaskan'
+                        : 'Assigned driver',
+                  ),
                   const SizedBox(height: AppSpacing.xl),
                 ],
                 if (order.needsWeightApproval) ...[
@@ -219,7 +211,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   // driver has accepted yet (pickup pending after accept, delivery pending
   // after the laundromat marks ready).
   String? _customerAwaitingDriver(AppLocalizations l10n, Order order) {
-    if (order.driver != null) return null;
     switch (order.status) {
       case OrderStatus.accepted:
         return l10n.orderDetailLookingForPickup;
@@ -276,10 +267,31 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ],
                 ),
               ),
+              _chatDriverButton(order),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _chatDriverButton(Order order) {
+    final name = order.driver?.name;
+    return IconButton(
+        tooltip: Localizations.localeOf(context).languageCode == 'id'
+            ? 'Chat Driver'
+            : 'Chat with Driver',
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OrderChatScreen(
+              orderId: order.id,
+              channel: 'customer_driver',
+              interlocutorName: name?.isNotEmpty == true ? name : 'Driver',
+            ),
+          ),
+        ),
+        icon: const Icon(Icons.chat_outlined, color: AppColors.primaryDark),
     );
   }
 
@@ -334,7 +346,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ],
           ),
         ),
-        StatusChip(status: order.status),
+        IconButton(
+          tooltip: l10n.chatContactPartner,
+          onPressed: () => _openChat(order),
+          icon: const Icon(Icons.chat_outlined, color: AppColors.primaryDark),
+        ),
       ],
     );
   }

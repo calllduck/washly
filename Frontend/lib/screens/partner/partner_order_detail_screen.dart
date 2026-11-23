@@ -424,8 +424,12 @@ class _PartnerOrderDetailScreenState extends State<PartnerOrderDetailScreen> {
   String? _partnerVehicleContext(Order order, AppLocalizations l10n) {
     if (order.driver == null) return null;
     switch (order.status) {
+      case OrderStatus.driverAssigned:
       case OrderStatus.pickedUp:
       case OrderStatus.atLaundromat:
+      case OrderStatus.weighedAwaitingConfirm:
+      case OrderStatus.awaitingPayment:
+      case OrderStatus.washing:
         return l10n.partnerOrderDetailDriverBringingIn;
       case OrderStatus.readyForDelivery:
       case OrderStatus.outForDelivery:
@@ -438,7 +442,6 @@ class _PartnerOrderDetailScreenState extends State<PartnerOrderDetailScreen> {
   // "Looking for a driver" state for the partner: the laundry is ready to ship
   // but no driver has accepted the delivery leg yet.
   String? _partnerAwaitingDriver(Order order, AppLocalizations l10n) {
-    if (order.driver != null) return null;
     if (order.status == OrderStatus.readyForDelivery) {
       return l10n.partnerOrderDetailLookingForDriver;
     }
@@ -509,6 +512,20 @@ class _PartnerOrderDetailScreenState extends State<PartnerOrderDetailScreen> {
                   style: AppTypography.caption,
                 ),
               ],
+            ),
+          ),
+          if (order.status.hasActiveDriverAssignment) IconButton(
+            tooltip: 'Chat Driver',
+            icon: const Icon(Icons.chat_outlined, color: AppColors.primaryDark),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => OrderChatScreen(
+                  orderId: order.id,
+                  channel: 'partner_driver',
+                  interlocutorName: d.name?.isNotEmpty == true ? d.name : 'Driver',
+                ),
+              ),
             ),
           ),
         ],

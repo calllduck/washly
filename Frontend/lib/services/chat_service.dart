@@ -12,12 +12,13 @@ String _messageFromDioError(DioException e, String fallback) {
 
 class ChatService {
   /// Fetch chat thread and messages for an order.
-  Future<OrderChatThread> getMessages(int orderId, {int? sinceId}) async {
+  Future<OrderChatThread> getMessages(int orderId, {int? sinceId, String channel = 'customer_partner'}) async {
     try {
       final response = await ApiClient.dio.get(
         '/chat/orders/$orderId/messages',
         queryParameters: {
           if (sinceId != null) 'sinceId': sinceId,
+          'channel': channel,
         },
       );
       return OrderChatThread.fromJson(response.data as Map<String, dynamic>);
@@ -27,11 +28,12 @@ class ChatService {
   }
 
   /// Send a new message to the order chat.
-  Future<OrderChatMessage> sendMessage(int orderId, String text) async {
+  Future<OrderChatMessage> sendMessage(int orderId, String text, {String channel = 'customer_partner'}) async {
     try {
       final response = await ApiClient.dio.post(
         '/chat/orders/$orderId/messages',
         data: {'text': text.trim()},
+        queryParameters: {'channel': channel},
       );
       return OrderChatMessage.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {

@@ -118,6 +118,15 @@ extension OrderStatusX on OrderStatus {
     }
   }
 
+  // Match the statuses returned by the driver's active-assignment endpoint.
+  bool get hasActiveDriverAssignment => switch (this) {
+        OrderStatus.driverAssigned || OrderStatus.pickedUp ||
+        OrderStatus.atLaundromat || OrderStatus.weighedAwaitingConfirm ||
+        OrderStatus.awaitingPayment || OrderStatus.washing ||
+        OrderStatus.outForDelivery => true,
+        _ => false,
+      };
+
   bool get isTerminal =>
       this == OrderStatus.completed || this == OrderStatus.cancelled;
 
@@ -295,6 +304,7 @@ class Order {
 
   final OrderLaundromat? laundromat;
   final OrderDriver? driver;
+  final String? customerName;
   final List<OrderItem> items;
   final List<DeclaredItem> declaredItems;
   final List<OrderPayment> payments;
@@ -317,6 +327,7 @@ class Order {
     required this.updatedAt,
     this.laundromat,
     this.driver,
+    this.customerName,
     required this.items,
     required this.declaredItems,
     required this.payments,
@@ -356,6 +367,7 @@ class Order {
       driver: json['driver'] == null
           ? null
           : OrderDriver.fromJson(json['driver'] as Map<String, dynamic>),
+      customerName: (json['customer'] as Map<String, dynamic>?)?['name'] as String?,
       items: (json['items'] as List? ?? [])
           .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
           .toList(),

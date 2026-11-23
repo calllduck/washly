@@ -29,33 +29,27 @@ class _DriverHomeShellState extends State<DriverHomeShell> {
       DriverProfileScreen(),
     ];
 
+    final nav = AppBottomNav(
+      index: _index,
+      onTap: (i) => setState(() => _index = i),
+      items: [
+        AppNavItem(Icons.home_rounded, Icons.home_outlined, l10n.driverNavHome),
+        AppNavItem(Icons.two_wheeler, Icons.two_wheeler_outlined, l10n.driverNavActive),
+        AppNavItem(Icons.history_rounded, Icons.history, l10n.driverNavHistory),
+        AppNavItem(Icons.person_rounded, Icons.person_outline, l10n.driverNavProfile),
+      ],
+    );
+
     return Scaffold(
-      // Overlay the floating nav on top of the body so there's no grey bar
-      // behind it.
-      body: Stack(
-        children: [
-          Positioned.fill(child: pages[_index]),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: AppBottomNav(
-              index: _index,
-              onTap: (i) => setState(() => _index = i),
-              items: [
-                AppNavItem(
-                    Icons.home_rounded, Icons.home_outlined, l10n.driverNavHome),
-                AppNavItem(Icons.two_wheeler, Icons.two_wheeler_outlined,
-                    l10n.driverNavActive),
-                AppNavItem(Icons.history_rounded, Icons.history,
-                    l10n.driverNavHistory),
-                AppNavItem(Icons.person_rounded, Icons.person_outline,
-                    l10n.driverNavProfile),
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: _index == 1
+          ? Column(children: [
+              Expanded(child: pages[_index]),
+              ColoredBox(color: Colors.white, child: nav),
+            ])
+          : Stack(children: [
+              Positioned.fill(child: pages[_index]),
+              Positioned(left: 0, right: 0, bottom: 0, child: nav),
+            ]),
     );
   }
 }

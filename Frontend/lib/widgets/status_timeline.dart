@@ -143,7 +143,8 @@ class _StatusTimelineState extends State<StatusTimeline>
                 ],
               ),
               const SizedBox(width: AppSpacing.md),
-              Padding(
+              Expanded(
+                child: Padding(
                 padding: EdgeInsets.only(
                   // Nudge the label to vertically centre with the small circle.
                   top: 4,
@@ -162,13 +163,12 @@ class _StatusTimelineState extends State<StatusTimeline>
                             isCurrent ? FontWeight.bold : FontWeight.w600,
                       ),
                     ),
-                    if (isCurrent) ...[
-                      const SizedBox(height: 2),
-                      Text(widget.order.status.localizedLabel(l10n),
-                          style: AppTypography.caption
-                              .copyWith(color: AppColors.primaryDark)),
+                    if (isCurrent || (isCompleted && isLast)) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      StatusChip(status: widget.order.status),
                     ],
                   ],
+                ),
                 ),
               ),
             ],
